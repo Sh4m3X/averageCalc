@@ -4,10 +4,8 @@
 typedef struct Persona{
   char name[50];
   char surname[50];
-  float mean;
-  float cfu_mean;
-  float institute_mean;
-  float mean_final;
+  int N;
+  int D;
 } USER;
 
 

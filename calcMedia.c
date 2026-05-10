@@ -1,95 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <list.h>
+#include <stdbool.h>
+#include "list.h"
+#include "utils.h"
 
-/*
- 
-  char buffer[100];
-  FILE* file = fopen("./database.bin", "r+");
-  fread(buffer, sizeof(char), 100, file);
-  printf("%s\n", buffer);
-  fwrite("abcde\0", 5*sizeof(char), 1, file);
-  fclose(file);
-  return 0;
 
-*/
-
-//READING AND WRITING ON FILE
-
-void read_elem_from_file(ELEM** head, FILE * file){
-  USER buff;
-  int counter = 0;
- 
-  while(fread(&buff, sizeof(USER), 1, file)==1){
-    USER * new_user = calloc(1, sizeof(USER));
-    if(new_user == NULL){
-      printf("Error occurred: cannot instantiate new user\n");
-      exit(1);
+/*  OTHER USER INTERACTION FUNCTION  */
+int ask_user_to_create_database(){
+  printf("Hi user this software need the creation of a file called \"database.bin\" to store information for further execution.\n"
+    "If your are reading this could be for two reason, it's the first time you are executing the software, or the file created previously has not been found from the software.\n"
+    "If it is the first case i want to know if you agree with the creation of the file.\nType (Y/N): ");
+  while(true){
+    char c = (char)read_char();
+    if(c=='Y'){
+      return 1;
+    }else if(c=='N'){
+      
+      return 0;
     }
-    *new_user = buff;
-    append_list(head, new_user);
-    counter++;
+    printf("\nYou should be precise (Y/N): ");
   }
-  if(counter == 0) printf("no user found in the database\n");
-  else printf("%d user was found in database and loaded into memory\n", counter);
+}
+
+void print_user(USER * user, int c){
+  printf("[ELEMENT %d]\n", c);
+  printf("Name: %s\n", user->name);
+  printf("Surname: %s\n", user->surname);
+  printf("Votes-Credits: ");
+  int i=0;
+  while(i<user->num_votes && user->votes[i]!=0){
+    printf("[%d, %d] ", user->votes[i], user->credits[i]);
+    i++;
+  }
+  printf("Weighted average: %.2f\n", weighted_average(user->votes, user->credits, user->num_votes)); 
+  printf("Arithmetic average: %.2f\n", arithmetic_average(user->votes, user->credits, user->num_votes)); 
+  printf("Institute average: %.2f\n\n", institute_average(user->votes, user->credits, user->num_votes));
+  print("Note: if some value i 0 something has gone bad\n");
   return;
 }
 
-void read_file(ELEM**head){
-  FILE* file = fopen("./database.bin", "r+");
-  if (file == NULL){
-    char c;
-    printf("Hi user this software need the creation of a file called \"database.bin\" to store information for further execution.\n If your are reading this could be for two reason, it's the first time you are executing the software, or the file created previously has not been find from the software.\n If it is the first case i want to know if you agree with the creation of the file.\n Type (Y/N): ")
-    c = getchar();
-    getchar();
-    while(true){
-      if(c=="Y"){
-        file = fopen("./database.bin", "w+");
-        if(file==NULL){
-          printf("Error occurred: cannot create a database file\n");
-          exit(1);
-        }
-        printf("Created a file called database.bin\neven if it is not a real database :)\n");
-        return;
-      }else if(c=="N"){
-        printf("Unfortunately without that file i must interrupt the execution. bye bye\n");
-        exit(1);
-      }
-      print("\nYou should be precise (Y/N): ");
-    }
+void ui_load(ELEM **phead){
+  int c = load_database(phead); 
+  if(c==1){
+    printf("Error occurred while loading database\n");
+    return 1;
+  }else if(c==-1){
+    printf("Unfortunately without that file i must interrupt the execution. bye bye\n");
+    return 0;
   }
-  
-  read_elem_from_file(head, file);
-
-  fclose(file);
-  printf("file readed succesfully\n"); 
   return;
 }
 
-void write_elem_on_file(ELEM** phead, FILE * file){
-  int counter = 0;
-  ELEM * current = *phead;
-  while(current!=NULL){
-    fwrite(current->data, 5*sizeof(USER), 1, file);
-    current = current->next;
-    c++;
-  }
-  if(counter == 0) printf("no user saved in the database\n");
-  else printf("%d user saved in the database\n", counter);
-  return;
-}
-
-void write_file(ELEM ** phead){
-  FILE* file = fopen("./database.bin", "w+");
-  if(file == NULL){
-    printf("Impossible to write in the file.\n");
-    return;
-  }
-
-  write_elem_on_file(head, file);
-
-  fclose(file);
-  printf("file updated succesfully\n"); 
+void ui_write_file(ELEM *head){
+  int c = write_file(head);
+  if(c==-1) printf("Impossible to write in the file.\n");
+  else if(c == 0) printf("no user saved in the database\n");
+  else printf("%d user saved in the database\n", c);
   return;
 }
 
@@ -97,40 +63,38 @@ void write_file(ELEM ** phead){
 
 //USER INTERACTION
 void user_interaction(ELEM**head){
-  int choice = -1;
-  while(choice!=0){
-    printf("Hi dear user this software is meant to use a file as a database, you can manage it with the following options. The idea is that for each person you can store the information about the their exams votes, then you can ask for the calculation of some specific means, or to do some hypotetical calculation.\n I'm building this beacuse i think often how some marks can influece my mean, and every time i has to do such huge calculation that is just boring.\nThat said choose what you want to do:\n");
-    printf("0 exit\n
-	    1 show database\n
-	    2 add a person\n
-	    3 remove a person\n
-	    4 update an entry\n
-	    5 calculation mode\n
-	    Insert the number: ");
-    scanf("%d", &choice);
-    switch(choice){
-      case 0:
+  printf("Hi dear user, this code is meant to store informations about your marks and the one of your friends," 
+          "also it allows you to calculate of some specific means, or to do some hypotetical calculation.\n"
+          "That said choose what you want to do:\n");
+  while(true){
+    printf("0 exit\n1 show database\n2 add a person\n3 remove a person\n4 update an entry\n5 calculation mode\nInsert the number: ");
+    char c = (char)read_char();
+    switch(c){
+      case '0':
         printf("bye bye\n");
-	return;
-      case 1:
-        print_database(*head);
-      
+	      return;
+      case '1':
+        traverse_database(*head);
+        break;
       default:
-        print("Choice didn't recognized\n");    
+        printf("Choice didn't recognized\n");    
     }
-
   }
 }
 
 
 int main(){
   ELEM * head = NULL;
-  read_file(&head);
+  ui_load(&head);
+
   user_interaction(&head); 
+
   //implement write anddeallocate
-  write_file(&head);
+  
+  ui_write_file(head);
+
   deallocate(&head);
-  return;
+  return 0;
 }
 
 

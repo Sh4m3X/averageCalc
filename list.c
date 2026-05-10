@@ -1,38 +1,56 @@
-#include <list.h>
+#include "list.h"
 #include <stdlib.h>
+#include <stdio.h>
 
-
-void append_list(ELEM ** phead, USER * new_user){
+int append_list(ELEM ** phead, USER * new_user){
   ELEM* new_elem = calloc(1, sizeof(ELEM));
   if (new_elem == NULL) {
-    printf("Error occurred: impossible to instantiate memory\n");
-    exit(1);
+    return 1;
   }
 
   new_elem->data = new_user;
   new_elem->next = NULL;
   if(*phead==NULL){
      *phead = new_elem;
-     return;
+  }else{
+    ELEM* current = *phead;
+    while(current->next != NULL){
+      current = current->next;
+    }
+    current->next = new_elem;
   }
-  ELEM* current = *phead;
-  while(current->next != NULL){
+  return 0;
+}
+
+void traverse_database(ELEM * head){ 
+  if(head==NULL){
+    printf("No records in the database\n");
+    return;
+  }
+  ELEM * current = head;
+  int c = 0;
+  USER * info;
+  while(current!=NULL){
+    info = current->data;
+    c++;
+    print_user(info, c);
     current = current->next;
   }
-  current->next = new_elem;
   return;
 }
 
 void deallocate(ELEM** phead){
-  ELEM * current = *phead;
-  ELEM * useful;
+  ELEM *current = *phead;
+  ELEM *next;
   while(current!=NULL){
+    next = current->next;
+    
     free(current->data);
-    useful = current;
-    current = current->next; 
-    free(useful);
+    free(current);
+    
+    current = next;
   }
-  *phead == NULL
+  *phead = NULL;
   return;
 }
 

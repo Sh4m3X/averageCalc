@@ -14,7 +14,8 @@ typedef struct Elem {
   struct Elem * next;
 } ELEM;
 
-void append_list(ELEM ** phead, USER * new_user);
+int append_list(ELEM ** phead, USER * new_user);
+void traverse_database(ELEM * head);
 void deallocate(ELEM** phead);
 
 

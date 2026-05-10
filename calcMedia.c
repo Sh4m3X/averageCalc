@@ -14,7 +14,7 @@
 
 */
 
-//READING FROM FILE
+//READING AND WRITING ON FILE
 
 void read_elem_from_file(ELEM** head, FILE * file){
   USER buff;
@@ -66,11 +66,40 @@ void read_file(ELEM**head){
   return;
 }
 
+void write_elem_on_file(ELEM** phead, FILE * file){
+  int counter = 0;
+  ELEM * current = *phead;
+  while(current!=NULL){
+    fwrite(current->data, 5*sizeof(USER), 1, file);
+    current = current->next;
+    c++;
+  }
+  if(counter == 0) printf("no user saved in the database\n");
+  else printf("%d user saved in the database\n", counter);
+  return;
+}
+
+void write_file(ELEM ** phead){
+  FILE* file = fopen("./database.bin", "w+");
+  if(file == NULL){
+    printf("Impossible to write in the file.\n");
+    return;
+  }
+
+  write_elem_on_file(head, file);
+
+  fclose(file);
+  printf("file updated succesfully\n"); 
+  return;
+}
+
+
+
 //USER INTERACTION
 void user_interaction(ELEM**head){
   int choice = -1;
   while(choice!=0){
-    printf("Hi dear user this software is meant to use a file as a database, you can manage it with the following options. The idea is that for each person you can store the information about the their exams votes, then you can ask for the calculation of some specific means, or to do some hypotetical calculation.\n I'm building this beacuse i think often how some marks can influece my mean, and every time i has to do such huge calculation that is just boring.\nThat said choose what you want to do:\n"
+    printf("Hi dear user this software is meant to use a file as a database, you can manage it with the following options. The idea is that for each person you can store the information about the their exams votes, then you can ask for the calculation of some specific means, or to do some hypotetical calculation.\n I'm building this beacuse i think often how some marks can influece my mean, and every time i has to do such huge calculation that is just boring.\nThat said choose what you want to do:\n");
     printf("0 exit\n
 	    1 show database\n
 	    2 add a person\n
@@ -80,9 +109,12 @@ void user_interaction(ELEM**head){
 	    Insert the number: ");
     scanf("%d", &choice);
     switch(choice){
-      case 1:
+      case 0:
         printf("bye bye\n");
 	return;
+      case 1:
+        print_database(*head);
+      
       default:
         print("Choice didn't recognized\n");    
     }
@@ -95,7 +127,10 @@ int main(){
   ELEM * head = NULL;
   read_file(&head);
   user_interaction(&head); 
-
+  //implement write anddeallocate
+  write_file(&head);
+  deallocate(&head);
+  return;
 }
 
 

@@ -1,6 +1,7 @@
 #include <list.h>
 #include <stdlib.h>
 
+
 void append_list(ELEM ** phead, USER * new_user){
   ELEM* new_elem = calloc(1, sizeof(ELEM));
   if (new_elem == NULL) {
@@ -22,7 +23,18 @@ void append_list(ELEM ** phead, USER * new_user){
   return;
 }
 
-
+void deallocate(ELEM** phead){
+  ELEM * current = *phead;
+  ELEM * useful;
+  while(current!=NULL){
+    free(current->data);
+    useful = current;
+    current = current->next; 
+    free(useful);
+  }
+  *phead == NULL
+  return;
+}
 
 
 

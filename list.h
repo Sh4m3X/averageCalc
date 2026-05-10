@@ -4,17 +4,19 @@
 typedef struct Persona{
   char name[50];
   char surname[50];
-  int N;
-  int D;
+  int votes[20];
+  int credits[20];
+  int num_votes;
 } USER;
-
 
 typedef struct Elem {
   USER * data;
   struct Elem * next;
 } ELEM;
 
-void append_list(ELEM ** head, USER * new_user);
+void append_list(ELEM ** phead, USER * new_user);
+void deallocate(ELEM** phead);
+
 
 
 

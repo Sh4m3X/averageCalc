@@ -6,8 +6,12 @@
 
 int ask_user_to_create_database();
 void print_user(USER * user, int c);
-void ui_load(ELEM **phead);
-
+int ui_load(ELEM **phead);
+void ui_write_file(ELEM *head);
+void ask_name(USER *new_user);
+void read_user_data(USER *new_user);
+int handle_add_element(ELEM **phead);
+void user_interaction(ELEM**phead);
 int main();
 
 #endif

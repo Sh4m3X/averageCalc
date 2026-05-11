@@ -1,6 +1,8 @@
 #include "list.h"
+#include "calcMedia.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 
 int append_list(ELEM ** phead, USER * new_user){
   ELEM* new_elem = calloc(1, sizeof(ELEM));

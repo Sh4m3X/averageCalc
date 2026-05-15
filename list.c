@@ -1,8 +1,9 @@
 #include "list.h"
+#include "utils.h"
 #include "calcMedia.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
 
 int append_list(ELEM ** phead, USER * new_user){
   ELEM* new_elem = calloc(1, sizeof(ELEM));
@@ -25,6 +26,7 @@ int append_list(ELEM ** phead, USER * new_user){
 }
 
 void traverse_database(ELEM * head){ 
+  printf("\n");
   if(head==NULL){
     printf("No records in the database\n");
     return;
@@ -41,7 +43,41 @@ void traverse_database(ELEM * head){
   return;
 }
 
-void deallocate(ELEM** phead){
+void remove_person(ELEM**phead, char *name, char *surname, int size){
+  ELEM * head = *phead;
+  if(is_right_person(head->data, name, surname)){
+    
+    *phead = (*phead)->next;
+    free(head->data);
+    free(head);
+    
+  }else{
+    ELEM * current = head;
+    while(current->next!=NULL && !is_right_person(current->next->data, name, surname)){
+      current = current->next;
+    }
+    if(current!=NULL){
+      ELEM * support = current->next;
+      current->next = support->next;
+      free(support->data);
+      free(support);
+      printf("%s %s removed from database\n");
+    }else{
+      printf("Person not found in the database\n");
+    }
+  }
+  return;
+}
+
+void deallocate_pers(USER **new_user){
+  free(*new_user);
+  *new_user = NULL;
+  return;
+}
+
+
+
+void deallocate_list(ELEM** phead){
   ELEM *current = *phead;
   ELEM *next;
   while(current!=NULL){
@@ -55,6 +91,7 @@ void deallocate(ELEM** phead){
   *phead = NULL;
   return;
 }
+
 
 
 

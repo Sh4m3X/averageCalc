@@ -23,12 +23,11 @@ int ui_load(ELEM **phead){
 void ui_write_file(ELEM *head){
   int c = write_file(head);
   if(c==-1) printf("Impossible to write in the file.\n");
-  else if(c == 0) printf("no user saved in the database\n");
+  else if(c == 0) printf("No user saved in the database\n");
   else printf("%d user saved in the database\n", c);
   return;
 }
 
-/* DATABASE ASK  */
 int ask_user_to_create_database(){
   printf("Hi user this software need the creation of a file called \"database.bin\" to store information for further execution.\n"
     "If your are reading this could be for two reason, it's the first time you are executing the software, or the file created previously has not been found from the software.\n"
@@ -46,7 +45,6 @@ int ask_user_to_create_database(){
 }
 
 /*  FIRST OPTION  */
-
 void print_user(USER * user, int c){
   printf("[ELEMENT %d]\n", c);
   printf("Name: %s\n", user->name);
@@ -57,6 +55,7 @@ void print_user(USER * user, int c){
     printf("[%d, %d] ", user->votes[i], user->credits[i]);
     i++;
   }
+  printf("\n");
   printf("Weighted average: %.2f\n", weighted_average(user->votes, user->credits, user->num_votes)); 
   printf("Arithmetic average: %.2f\n", arithmetic_average(user->votes, user->credits, user->num_votes)); 
   printf("Institute average: %.2f\n\n", institute_average(user->votes, user->credits, user->num_votes));
@@ -67,26 +66,25 @@ void print_user(USER * user, int c){
 
 
 /*  SECOND OPTION (ADD A PERSON)  */
-void ask_name(USER *new_user){
-  int valid;
-  do{
-    printf("\n\nInsert the name (max 49 char): ");
-    get_string(new_user->name, sizeof(new_user->name));
+void read_user_data(USER **pnew_user){
+  printf("\nWhenever you can type \"c\" to interupt the data gathering\n");
+ 
+  USER * new_user = *pnew_user;
+  ask_string(new_user->name, MAX_STR_LEN, "name");
+  if(new_user->name[0] == '\0'){
+    deallocate_pers(pnew_user);
+    return;
+  }
 
-    valid = only_letters(new_user->name);
-    if(!valid){
-      printf("Only letters allowed.\n");
-    }
-  }while(!valid);
-  return;
-}
+  ask_string(new_user->surname, MAX_STR_LEN, "surname");
+  if(new_user->surname[0] == '\0'){
+    deallocate_pers(pnew_user);
+    return;
+  }
 
-void read_user_data(USER *new_user){
-  ask_name(new_user);
-
-
-
+  ask_num_elements(&(new_user->num_votes), "votes");
   
+  ask_pair_values(new_user, "votes", "credits");  
 }
 
 
@@ -95,15 +93,32 @@ int handle_add_element(ELEM **phead){
   if(new_user == NULL){
     return 1;
   }
-  read_user_data(new_user);
-  append_list(phead, new_user);
+  read_user_data(&new_user);
+  
+  if(new_user!=NULL){
+    append_list(phead, new_user);
+  }
   return 0;
 }
 
+/*  THIRD OPTION (REMOVE A PERSON)  */
+void handle_remove_element(ELEM**phead){
+  int size = 50;
+  char name[size];
+  char surname[size];
+
+  printf("\nTo remove a person follow the instruction\n");
+  ask_string(name, MAX_STR_LEN, "name");
+  ask_string(surname, MAX_STR_LEN, "surname");
+  remove_person(phead, name, surname, size);
+  return;
+}
+ 
 
 
 /* USER SWITCH BLOCK */
 void user_interaction(ELEM**phead){
+
   printf("Hi dear user, this code is meant to store informations about your marks and the one of your friends," 
           "also it allows you to calculate of some specific means, or to do some hypotetical calculation.\n"
           "That said choose what you want to do:\n");
@@ -112,8 +127,8 @@ void user_interaction(ELEM**phead){
     char c = (char)read_char();
     switch(c){
       case '0':
-        printf("bye bye\n");
-	      return;
+        printf("\nbye bye\n");
+	return;
       case '1':
         traverse_database(*phead);
         break;
@@ -122,9 +137,13 @@ void user_interaction(ELEM**phead){
           printf("Something has gone wrong.\n"); 
         };    
         break;
+      case '3':
+        handle_remove_element(phead);
+        break;
       default:
         printf("Choice didn't recognized\n");    
     }
+    printf("\n");
   }
 }
 
@@ -133,15 +152,16 @@ void user_interaction(ELEM**phead){
 /*  MAIN  */
 int main(){
   ELEM * head = NULL;
+  printf("[INITIALIZATION]\n"); 
   if(ui_load(&head)) exit(1);
-
+  printf("[INITIALIZATION TERMINATED]\n\n");
+  
   user_interaction(&head); 
 
-  //implement write anddeallocate
-  
+  printf("\n[TERMINATION]\n"); 
   ui_write_file(head);
-
-  deallocate(&head);
+  deallocate_list(&head);
+  printf("[TERMINATION TERMINATED]\n");
   return 0;
 }
 

@@ -34,7 +34,7 @@ FILE * create_file(){
 }
 
 int load_database(ELEM **phead){
-  FILE* file = fopen(DATABASE_FILE, "rb+");
+  FILE* file = fopen(DATABASE_FILE, "rb+"); 
   if (file == NULL){
     if(ask_user_to_create_database()){
       file = create_file();
@@ -42,6 +42,7 @@ int load_database(ELEM **phead){
     }else{
       return -1;
     }
+    return 0;
   }
   
   if(read_elem_from_file(phead, file)){
@@ -50,7 +51,6 @@ int load_database(ELEM **phead){
   }
 
   fclose(file);
-  printf("file read succesfully\n"); 
   return 0;
 }
 

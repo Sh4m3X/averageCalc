@@ -5,6 +5,10 @@
 #include <errno.h>
 #include "list.h"
 
+int c_char(char *buff){
+  return buff[0] == 'c' && buff[1] == '\0';
+}
+
 void flush_stdin(){
   int discard;
   while ((discard = getchar()) != '\n' && discard != EOF);
@@ -56,12 +60,14 @@ void ask_string(char * new_str, int size, char * str){
       valid = 0;
     }
   }while(!valid);
-  if(buff[0] != 'c' || buff[1] != '\0'){
+  if(!c_char(buff)){
     int i = 0;
     for(i = 0; buff[i]!='\0'; i++){
       new_str[i] = buff[i];
     }
     new_str[i] = '\0';
+  }else{
+    new_str[0] = '\0';
   }
   return;
 }
@@ -106,8 +112,12 @@ int convert_to_int(int *c, char *num, int min, int max){
     printf("Must insert a number\n");
     return 0;
   }
-    
-
+   
+  if(c_char(num)){
+    *c = -1;
+    return 1;
+  }
+  
  
   if(!str_convertable_to_int(num, &number)){
     return 0;
@@ -165,24 +175,46 @@ int get_two_values(char *buff, int *val1, int *val2, char* name_val_1, char* nam
 }
 
 
-void ask_pair_values(USER *new_user, char *name_val_1, char *name_val_2){
+int ask_pair_values(int num_votes, int *votes, int *credits, char *name_val_1, char *name_val_2){
   char buff[128];
   int vote;
   int credit;
-  printf("Insert %d pair of %s-%s one at the time (range of votes: %d to %d:\n", 
-          new_user->num_votes, name_val_1, name_val_2, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
-  for(int i = 0; i<new_user->num_votes; i++){
+  printf("Insert %d pair of %s-%s one at the time (range of votes: %d to %d):\n", 
+          num_votes, name_val_1, name_val_2, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
+  for(int i = 0; i<num_votes; i++){
     do{
       printf("%d) ", i+1);
       get_string(buff, sizeof(buff));
-    }while(!get_two_values(buff, &vote, &credit, name_val_1, name_val_2));
-    new_user->votes[i] = vote;
-    new_user->credits[i] = credit;
+    }while(!c_char(buff) && !get_two_values(buff, &vote, &credit, name_val_1, name_val_2));
+    if(!c_char(buff)){
+      votes[i] = vote;
+      credits[i] = credit;
+    }else{
+      return 0;
+    }
   }
-  return;
+  return 1;
 }
 
 int is_right_person(USER *data, char *name, char *surname){
   return (strcmp(data->name, name)==0 && strcmp(data->surname, surname)==0);
+}
+
+void change_string(char *str, char *request){
+  int size = MAX_STR_LEN;
+  char name[size];
+  ask_string(name, size, request);
+  if(empty_str(name)) return;
+  else{
+    int i;
+    for(i = 0; name[i]!='\0'; i++){
+      str[i] = name[i];
+    }      
+    for(; str[i]!='\0'; i++){
+      str[i] = '\0';
+    }      
+  } 
+  return;
+      
 }
 

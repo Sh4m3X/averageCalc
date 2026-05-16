@@ -19,6 +19,7 @@ void traverse_database(ELEM * head);
 void remove_person(ELEM **phead, char *name, char *surname, int size);
 void deallocate_list(ELEM** phead);
 void deallocate_pers(USER **new_user);
+ELEM * retrive(ELEM *head, char *name, char *surname);
 
 #endif
 

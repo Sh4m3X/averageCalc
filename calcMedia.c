@@ -59,7 +59,7 @@ void print_user(USER * user, int c){
   printf("Weighted average: %.2f\n", weighted_average(user->votes, user->credits, user->num_votes)); 
   printf("Arithmetic average: %.2f\n", arithmetic_average(user->votes, user->credits, user->num_votes)); 
   printf("Institute average: %.2f\n\n", institute_average(user->votes, user->credits, user->num_votes));
-  printf("Note: if some value is 0 something has gone bad\n");
+  printf("Note: if some value is 0 moybe something has gone bad\n");
   return;
 }
 
@@ -71,20 +71,30 @@ void read_user_data(USER **pnew_user){
  
   USER * new_user = *pnew_user;
   ask_string(new_user->name, MAX_STR_LEN, "name");
-  if(new_user->name[0] == '\0'){
+  if(empty_str(new_user->name)){
     deallocate_pers(pnew_user);
     return;
   }
 
   ask_string(new_user->surname, MAX_STR_LEN, "surname");
-  if(new_user->surname[0] == '\0'){
+  if(empty_str(new_user->surname)){
     deallocate_pers(pnew_user);
     return;
   }
 
   ask_num_elements(&(new_user->num_votes), "votes");
-  
-  ask_pair_values(new_user, "votes", "credits");  
+  if(new_user->num_votes == -1){
+    deallocate_pers(pnew_user);
+    return;
+  }
+  if(new_user->num_votes == 0){
+    return;
+  }
+  if(!ask_pair_values(new_user->num_votes, new_user->votes, new_user->credits, "votes", "credits")){
+    deallocate_pers(pnew_user);
+    return;
+  }
+  return;
 }
 
 
@@ -103,17 +113,98 @@ int handle_add_element(ELEM **phead){
 
 /*  THIRD OPTION (REMOVE A PERSON)  */
 void handle_remove_element(ELEM**phead){
-  int size = 50;
+  int size = MAX_STR_LEN;
   char name[size];
   char surname[size];
 
   printf("\nTo remove a person follow the instruction\n");
-  ask_string(name, MAX_STR_LEN, "name");
-  ask_string(surname, MAX_STR_LEN, "surname");
+  printf("Type c whenever you want to interrupt the action\n");
+  ask_string(name, size, "name");
+  if(empty_str(name)) return;
+  ask_string(surname, size, "surname");
+  if(empty_str(surname)) return;
   remove_person(phead, name, surname, size);
   return;
 }
  
+
+/* FOURTH OPTION (UPDATE AN ENTRY) */
+void ask_votes(USER * person){
+  int new_votes_num;
+  ask_num_elements(&new_votes_num, "votes");
+  if(new_votes_num == -1 || new_votes_num == 0){
+    return;
+  }
+  if(person->num_votes + new_votes_num >= MAX_NUM_VOTES){
+    printf("You exceeded the limit of votes %d\n", MAX_NUM_VOTES);
+    return;
+  }
+  int new_votes[new_votes_num];
+  int new_credits[new_votes_num];
+  if(!ask_pair_values(new_votes_num, new_votes, new_credits, "votes", "credits")){
+    return;
+  }
+  int i;
+  for(i = 0; i<new_votes_num; i++){
+    person->votes[person->num_votes+i] = new_votes[i];
+    person->credits[person->num_votes+i] = new_credits[i];
+  }
+  person->num_votes = person->num_votes + new_votes_num;
+  return;
+}
+
+void modify_options(USER *person){
+  while(true){
+    printf("\nWhat do you want to change about %s %s:\n", person->name, person->surname);
+    printf("0 nothing more\n"
+           "1 name\n"
+           "2 surename\n"
+           "3 add votes\n"
+           "4 remove vote\n"
+           "5 modify a vote\n"
+           "Insert the number: ");
+    char c = (char)read_char();
+    switch(c){
+      case '0':
+        printf("\n");
+        print_user(person, 1);            
+	return;
+      case '1':
+        change_string(person->name, "name");
+        break;
+      case '2':
+        change_string(person->surname, "surname");
+        break;
+      case '3':
+        ask_votes(person);
+        break;
+      default:
+        printf("\nChoice didn't recognized\n");    
+    } 
+  }
+}
+
+void update_entry(ELEM *head){
+  if(head == NULL){
+    printf("\nNo user to be modified\n");
+    return;
+  }
+  int size = MAX_STR_LEN;
+  char name[size];
+  char surname[size];
+  ELEM * person;
+  printf("\nType c whenever you want to interrupt the action\n"); 
+  printf("Choose the person to modify\n");
+  ask_string(name, size, "name");
+  if(empty_str(name)) return;
+  ask_string(surname, size, "surname");
+  if(empty_str(surname)) return;
+  person = retrive(head, name, surname);
+  if(person!=NULL){
+    modify_options(person->data);
+  }
+  return;
+}
 
 
 /* USER SWITCH BLOCK */
@@ -123,7 +214,13 @@ void user_interaction(ELEM**phead){
           "also it allows you to calculate of some specific means, or to do some hypotetical calculation.\n"
           "That said choose what you want to do:\n");
   while(true){
-    printf("0 exit\n1 show database\n2 add a person\n3 remove a person\n4 update an entry\n5 calculation mode\nInsert the number: ");
+    printf("0 exit\n"
+           "1 show database\n"
+           "2 add a person\n"
+           "3 remove a person\n"
+           "4 update an entry\n"
+           "5 calculation mode\n"
+           "Insert the number: ");
     char c = (char)read_char();
     switch(c){
       case '0':
@@ -140,8 +237,11 @@ void user_interaction(ELEM**phead){
       case '3':
         handle_remove_element(phead);
         break;
+      case '4':
+        update_entry(*phead);
+        break;
       default:
-        printf("Choice didn't recognized\n");    
+        printf("\nChoice didn't recognized\n");    
     }
     printf("\n");
   }

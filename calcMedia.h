@@ -12,6 +12,9 @@ void ask_string(char *new_str, int size, char * str);
 void read_user_data(USER **new_user);
 int handle_add_element(ELEM **phead);
 void handle_remove_element(ELEM**phead);
+void ask_votes(USER * person);
+void modify_options(USER *person);
+void update_entry(ELEM *head);
 void user_interaction(ELEM**phead);
 int main();
 

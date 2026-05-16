@@ -45,18 +45,22 @@ void traverse_database(ELEM * head){
 
 void remove_person(ELEM**phead, char *name, char *surname, int size){
   ELEM * head = *phead;
-  if(is_right_person(head->data, name, surname)){
-    
+  if(head == NULL){
+    printf("Database empty\n");
+    return;
+  }
+  
+  if(is_right_person(head->data, name, surname)){    
     *phead = (*phead)->next;
     free(head->data);
     free(head);
-    
+    printf("%s %s removed from database\n");
   }else{
     ELEM * current = head;
     while(current->next!=NULL && !is_right_person(current->next->data, name, surname)){
       current = current->next;
     }
-    if(current!=NULL){
+    if(current->next!=NULL){
       ELEM * support = current->next;
       current->next = support->next;
       free(support->data);
@@ -69,7 +73,7 @@ void remove_person(ELEM**phead, char *name, char *surname, int size){
   return;
 }
 
-void deallocate_pers(USER **new_user){
+void deallocate_pers(USER **new_user){  
   free(*new_user);
   *new_user = NULL;
   return;
@@ -90,6 +94,28 @@ void deallocate_list(ELEM** phead){
   }
   *phead = NULL;
   return;
+}
+
+ELEM * retrive(ELEM *head, char *name, char *surname){
+  ELEM * preturn = NULL;
+  ELEM * current = head;
+  if(head == NULL){
+    printf("Database empty\n");
+  }else{
+    if(is_right_person(head->data, name, surname)){    
+      preturn = head; 
+    }else{
+      while(current!=NULL && !is_right_person(current->data, name, surname)){
+        current = current->next;
+      }
+      if(current!=NULL){
+        preturn = current;
+      }else{
+        printf("Person not found in the database\n");
+      }
+    }
+  }
+  return preturn;
 }
 
 

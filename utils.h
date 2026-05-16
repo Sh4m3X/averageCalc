@@ -2,6 +2,7 @@
 #define UTILS_H
 #include <stddef.h>
 
+int c_char(char *buff);
 void flush_stdin();
 int read_char();
 int only_letters(char *str);
@@ -15,8 +16,10 @@ int str_convertable_to_int(char *buff, int *pvotes);
 int convert_to_int(int *c, char *num, int min, int max);
 void ask_num_elements(int *c, char *str); 
 void split_string(char * buff, int size, char *str1, char *str2);
-int ger_two_values(char *buff, int *val1, int *val2, char *name_val_1, char *name_val_2);
-void ask_pair_values(USER *new_user, char *name_val_1, char *name_val_2); 
+int get_two_values(char *buff, int *val1, int *val2, char *name_val_1, char *name_val_2);
+int ask_pair_values(int num_votes, int *votes, int *credits, char *name_val_1, char *name_val_2);
 int is_right_person(USER *data, char *name, char *surname); 
+void change_string(char *str, char *request);
+
 
 #endif

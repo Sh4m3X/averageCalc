@@ -5,6 +5,9 @@
 double weighted_average(const int *votes, const int *credits, int n);
 double arithmetic_average(const int *votes, const int *credits, int n);
 double institute_average(const int *votes, const int *credits, int n);
+double final_vote_average(double inst_average);
+
+
 
 #endif
 

@@ -21,6 +21,18 @@ int read_char(){
   return c;
 }
 
+int ask_yes_or_no(){
+  while(true){
+    char c = (char)read_char();
+    if(c=='Y'){
+      return 1;
+    }else if(c=='N'){
+      return 0;
+    }
+    printf("\nYou should be precise (Y/N): ");
+  }
+}
+
 int only_letters(char *str){
   for(int i = 0; str[i]!='\0'; i++){
     if(!isalpha((unsigned char)str[i])) return 0;
@@ -132,12 +144,10 @@ int convert_to_int(int *c, char *num, int min, int max){
   return 1;
 }
 
-void ask_num_elements(int *c, char *str){
+int get_num(int *c, char *str){
   char buff[128];
-  do{ 
-    printf("Insert the number of %s you want to insert (max %d): ", str, MAX_NUM_VOTES);
-    get_string(buff, sizeof(buff));
-  }while(!convert_to_int(c, buff, MIN_NUM_VOTES, MAX_NUM_VOTES));
+  get_string(buff, sizeof(buff));
+  return convert_to_int(c, buff, MIN_NUM_VOTES, MAX_NUM_VOTES);
 }
 
 void split_string(char * buff, int size, char* str1, char* str2){
@@ -167,8 +177,11 @@ int get_two_values(char *buff, int *val1, int *val2, char* name_val_1, char* nam
   split_string(buff, sizeof(buff), str1, str2);
   if(!convert_to_int(val1, str1, MIN_VALUE_VOTE, MAX_VALUE_VOTE) 
      || !convert_to_int(val2, str2, MIN_CREDIT_VAL, MAX_CREDIT_VAL)){
-    printf("FORMAT MUST BE: %s-%s\nRANGE MUST BE: from %d to %d\n", 
-            name_val_1, name_val_2, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
+    printf("FORMAT MUST BE: %s-%s\nRANGE %s MUST BE: from %d to %d\n", 
+            name_val_1, name_val_2, name_val_1, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
+    printf("FORMAT MUST BE: %s-%s\nRANGE %s MUST BE: from %d to %d\n", 
+            name_val_1, name_val_2, name_val_2, MIN_CREDIT_VAL, MAX_CREDIT_VAL);
+ 
     return 0;
   }
   return 1;
@@ -216,5 +229,85 @@ void change_string(char *str, char *request){
   } 
   return;
       
+}
+
+void clear_array(int * arr, int size){
+  for(int i=0; i<size; i++){
+     arr[i] = 0;
+  }
+  return;
+}
+
+int get_index_of_pair(int *arr1, int *arr2, int v, int c){
+  int i;
+  for(i = 0; i<MAX_NUM_VOTES; i++){
+    if(arr1[i] == v && arr2[i] == c){
+      return i;
+    }
+  }
+  return -1;
+}
+
+void remove_elem_from_array(int * arr, int i){
+  int j = i;
+  while(j<MAX_NUM_VOTES-1){
+    arr[j] = arr[j+1];
+    j++;
+  }
+  return;
+}
+
+
+void remove_pair(int *arr1, int *arr2, int *to_remove_1, int *to_remove_2, int size){
+  int j;
+  int i;
+  for(j = 0; j<size; j++){
+    i = get_index_of_pair(arr1, arr2, to_remove_1[j], to_remove_2[j]);   
+    if(i!=-1){
+      remove_elem_from_array(arr1, i);
+      remove_elem_from_array(arr2, i);
+    }else{
+      printf("Pair %d-%d not found\n", to_remove_1[j], to_remove_2[j]);
+    }
+  } 
+}
+
+int edit_elem_pair(int *arr1, int *arr2, int i){
+  char buff[128];
+  int new_vote;
+  int new_credit;
+  do{
+    get_string(buff, sizeof(buff));
+  }while(!c_char(buff) && !get_two_values(buff, &new_vote, &new_credit, "vote", "credit"));
+  if(!c_char(buff)){ 
+    arr1[i] = new_vote;
+    arr2[i] = new_credit;
+    return 1;
+  }
+  return 0;
+}
+
+void edit_pair(int *arr1, int *arr2, int *to_edit_1, int *to_edit_2, int size){  
+  int j;
+  int i;
+  for(j = 0; j<size; j++){
+    i = get_index_of_pair(arr1, arr2, to_edit_1[j], to_edit_2[j]);   
+    if(i!=-1){
+      printf("Edit the pair %d-%d: ", to_edit_1[j], to_edit_2[j]);
+      edit_elem_pair(arr1, arr2, i);
+    }else{
+      printf("Pair %d-%d not found\n", to_edit_1[j], to_edit_2[j]);
+    }
+  } 
+
+}
+
+void concat_array(int * arr1, int elems1, int *arr2, int elems2, int maxElems){
+  int i = 0;
+  while( i<elems2 ){
+    arr1[i+elems1] = arr2[i];
+    i++;
+  }
+  return;
 }
 

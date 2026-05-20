@@ -100,7 +100,7 @@ ELEM * retrive(ELEM *head, char *name, char *surname){
   ELEM * preturn = NULL;
   ELEM * current = head;
   if(head == NULL){
-    printf("Database empty\n");
+    printf("\nDatabase empty\n");
   }else{
     if(is_right_person(head->data, name, surname)){    
       preturn = head; 
@@ -111,7 +111,7 @@ ELEM * retrive(ELEM *head, char *name, char *surname){
       if(current!=NULL){
         preturn = current;
       }else{
-        printf("Person not found in the database\n");
+        printf("\nPerson not found in the database\n");
       }
     }
   }

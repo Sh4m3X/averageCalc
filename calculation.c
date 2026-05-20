@@ -40,3 +40,8 @@ double institute_average(const int *votes, const int *credits, int n){
   return (double)sum_votes/sum_credits;
 }
 
+double final_vote_average(double inst_average){
+  return inst_average/30*110;
+}
+
+

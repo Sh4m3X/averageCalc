@@ -63,6 +63,14 @@ void ask_num_hp_elements(USER *person, int * c, char * str){
   }while(!get_num(c, str));
 }
  
+void show_mean(int * votes, int * credits, int num_votes){
+  printf("Weighted average: %.2f\n", weighted_average(votes, credits, num_votes)); 
+  printf("Arithmetic average: %.2f\n", arithmetic_average(votes, credits, num_votes)); 
+  printf("Institute average: %.2f\n", institute_average(votes, credits, num_votes));
+  printf("Average for final vote: %.2f\n\n", final_vote_average(institute_average(votes, credits, num_votes)));
+  return;
+}
+
 
 
 /*  FIRST OPTION  */
@@ -78,11 +86,8 @@ void print_user(USER * user, int c){
     i++;
   }
   printf("\n");
-  printf("Weighted average: %.2f\n", weighted_average(user->votes, user->credits, user->num_votes)); 
-  printf("Arithmetic average: %.2f\n", arithmetic_average(user->votes, user->credits, user->num_votes)); 
-  printf("Institute average: %.2f\n", institute_average(user->votes, user->credits, user->num_votes));
-  printf("Average for final vote: %.2f\n\n", final_vote_average(institute_average(user->votes, user->credits, user->num_votes)));
- 
+  show_mean(user->votes, user->credits, user->num_votes); 
+
   return;
 }
 
@@ -248,6 +253,7 @@ void modify_options(USER *person){
            "4 remove votes\n"
            "5 modify a vote\n"
            "6 show changes\n"
+           "w to clear the screen\n"
            "Insert the number: ");
     char c = (char)read_char();
     printf("\n");
@@ -285,6 +291,9 @@ void modify_options(USER *person){
         printf("New_version:\n ");
         print_user(pcopy, 0);  
         printf("Note: if some value is 0 maybe something has gone bad\n");  	
+        break;
+      case 'w':
+        system("clear");
         break;
       default:
         printf("Choice didn't recognized\n");    
@@ -347,12 +356,9 @@ void new_mean_estimator(USER * pers){
   }
   printf("\n");
   printf("\nNew mean estimated for %s %s:\n", pers->name, pers->surname);
+  show_mean(hp_votes, hp_credits, hp_votes_num);
 
-  printf("Weighted average: %.2f\n", weighted_average(hp_votes, hp_credits, hp_votes_num)); 
-  printf("Arithmetic average: %.2f\n", arithmetic_average(hp_votes, hp_credits, hp_votes_num)); 
-  printf("Institute average: %.2f\n", institute_average(hp_votes, hp_credits, hp_votes_num));
-  printf("Average for final vote: %.2f\n\n", final_vote_average(institute_average(hp_votes, hp_credits, hp_votes_num)));
- 
+
   return;
 }
 
@@ -361,7 +367,9 @@ void calculation_options(USER * pers){
   while(true){
     printf("Choose what to do:\n"
            "0 exit\n"
-           "1 estimate new mean\n");
+           "1 estimate new mean\n"
+           "w to clear the screen\n"
+           "enter the option: ");
     char c = (char)read_char();
     printf("\n");
     switch(c){
@@ -370,6 +378,9 @@ void calculation_options(USER * pers){
 	return;
       case '1':
         new_mean_estimator(pers);
+        break;
+      case 'w':
+        system("clear");
         break;
       default:
         printf("Choice didn't recognized\n");
@@ -397,8 +408,6 @@ void calculation_mode(ELEM * head){
     calculation_options(person->data);
   }
   return;
-  
-
 }
 
 
@@ -415,6 +424,7 @@ void user_interaction(ELEM**phead){
            "3 remove a person\n"
            "4 update an entry\n"
            "5 calculation mode\n"
+           "w to clear the screen\n"
            "Insert the number: ");
     char c = (char)read_char();
     switch(c){
@@ -439,6 +449,9 @@ void user_interaction(ELEM**phead){
       case '5':
         calculation_mode(*phead);
         break;
+      case 'w':
+        system("clear");
+        break;
       default:
         printf("\nChoice didn't recognized\n");    
     }
@@ -450,6 +463,7 @@ void user_interaction(ELEM**phead){
 
 /*  MAIN  */
 int main(){
+  system("clear");
   ELEM * head = NULL;
   printf("[INITIALIZATION]\n"); 
   if(ui_load(&head)) exit(1);

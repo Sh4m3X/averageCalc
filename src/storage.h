@@ -1,7 +1,6 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-
 #include "list.h"
 
 int read_elem_from_file(ELEM **phead, void * file);
@@ -13,3 +12,5 @@ int write_file(ELEM *head);
 #endif
 
 #define DATABASE_FILE "./database.bin"
+
+

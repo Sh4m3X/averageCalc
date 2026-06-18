@@ -17,7 +17,7 @@ void flush_stdin(){
 
 int read_char(){
   int c = getchar();
-  flush_stdin();
+  if(c != '\n' && c != EOF) flush_stdin();
   return c;
 }
 
@@ -177,10 +177,11 @@ int get_two_values(char *buff, int *val1, int *val2, char* name_val_1, char* nam
   split_string(buff, sizeof(buff), str1, str2);
   if(!convert_to_int(val1, str1, MIN_VALUE_VOTE, MAX_VALUE_VOTE) 
      || !convert_to_int(val2, str2, MIN_CREDIT_VAL, MAX_CREDIT_VAL)){
-    printf("FORMAT MUST BE: %s-%s\nRANGE %s MUST BE: from %d to %d\n", 
-            name_val_1, name_val_2, name_val_1, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
-    printf("FORMAT MUST BE: %s-%s\nRANGE %s MUST BE: from %d to %d\n", 
-            name_val_1, name_val_2, name_val_2, MIN_CREDIT_VAL, MAX_CREDIT_VAL);
+    printf("FORMAT MUST BE: %s-%s\n", name_val_1, name_val_2);
+    printf("RANGE %s IS: from %d to %d\n", 
+            name_val_1, MIN_VALUE_VOTE, MAX_VALUE_VOTE);
+    printf("RANGE %s IS: from %d to %d\n", 
+            name_val_2, MIN_CREDIT_VAL, MAX_CREDIT_VAL);
  
     return 0;
   }

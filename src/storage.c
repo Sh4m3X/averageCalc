@@ -29,7 +29,7 @@ FILE * create_file(){
   if(file==NULL){
     return NULL;   
   }
-  printf("Created a file called %s\nActually it is not a real database :)\n", DATABASE_FILE);
+  printf("\nFile %s created successfully :)\n\n", DATABASE_FILE);
   return file;
 }
 

@@ -11,28 +11,35 @@
 int ui_load(ELEM **phead){
   int c = load_database(phead); 
   if(c==1){
-    printf("Error occurred while loading database\n");
+    printf("\nError occurred while loading database\n");
+    printf("\n[INITIALIZATION TERMINATED]\n"); 
     return 1;
   }else if(c==-1){
-    printf("Unfortunately without that file i must interrupt the execution. bye bye\n");
+    printf("\nThat's too bad.\nBye bye\n");
+    printf("\n[INITIALIZATION TERMINATED]\n");
     return 1;
   }
-  return 0;
+ return 0;
+}
+
+int ask_user_to_create_database(){
+  printf("\nHi user this software need the creation of a file called \"database.bin\" to store data.\n"
+    "Do you agree with the creation of the file?\nType (Y/N): ");
+  return ask_yes_or_no();
 }
 
 void ui_write_file(ELEM *head){
+  printf("Do you want to save changes (Y/N): ");
+  if(!ask_yes_or_no()){
+    printf("Sesion Changes discarded\n\n");
+    return;
+  }
+ 
   int c = write_file(head);
   if(c==-1) printf("Impossible to write in the file.\n");
   else if(c == 0) printf("No user saved in the database\n");
   else printf("%d user saved in the database\n", c);
   return;
-}
-
-int ask_user_to_create_database(){
-  printf("Hi user this software need the creation of a file called \"database.bin\" to store information for further execution.\n"
-    "If your are reading this could be for two reason, it's the first time you are executing the software, or the file created previously has not been found from the software.\n"
-    "If it is the first case i want to know if you agree with the creation of the file.\nType (Y/N): ");
-  return ask_yes_or_no();
 }
 
 void ask_num_elements_to_add(USER * pers, int *c, char *str){
@@ -95,7 +102,7 @@ void print_user(USER * user, int c){
 
 /*  SECOND OPTION (ADD A PERSON)  */
 void read_user_data(USER **pnew_user){
-  printf("\nWhenever you can type \"c\" to interupt the data gathering\n");
+  printf("Whenever you can type \"c\" to interupt the data gathering\n");
  
   USER * new_user = *pnew_user;
   ask_string(new_user->name, MAX_STR_LEN, "name");
@@ -145,7 +152,7 @@ void handle_remove_element(ELEM**phead){
   char name[size];
   char surname[size];
 
-  printf("\nTo remove a person follow the instruction\n");
+  printf("To remove a person follow the instruction\n");
   printf("Type c whenever you want to interrupt the action\n");
   ask_string(name, size, "name");
   if(empty_str(name)) return;
@@ -178,6 +185,7 @@ void ask_votes_add(USER * person){
     person->credits[person->num_votes+i] = new_credits[i];
   }
   person->num_votes = person->num_votes + new_votes_num;
+  
   return;
 }
 
@@ -195,14 +203,18 @@ void handle_remove(USER * pers, int * removed_votes, int * removed_credits, int 
     return;
   }
   remove_pair(pers->votes, pers->credits, removed_votes, removed_credits, size);
+  pers->num_votes = pers->num_votes - size;
+  
 }
 
 void ask_votes_remove(USER * person){
   int remove_votes_num;
+
+  ask_num_elements_to_remove(person, &remove_votes_num, "votes");
+
   int removed_votes[remove_votes_num];
   int removed_credits[remove_votes_num];
  
-  ask_num_elements_to_remove(person, &remove_votes_num, "votes");
   if(remove_votes_num == -1 || remove_votes_num == 0){
     return;
   }
@@ -226,14 +238,16 @@ void handle_edit(USER * pers, int * edited_votes, int * edited_credits, int size
 
 void ask_votes_to_edit(USER * person){
   int edit_votes_num;
+  ask_num_elements_to_edit(person, &edit_votes_num, "votes");
+
   int edited_votes[edit_votes_num];
   int edited_credits[edit_votes_num];
-  ask_num_elements_to_edit(person, &edit_votes_num, "votes");
+ 
   if(edit_votes_num == -1 || edit_votes_num == 0){
     return;
   }
 
-  if(person->num_votes >edit_votes_num){
+  if(person->num_votes >= edit_votes_num){
     if(!ask_pair_values(edit_votes_num, edited_votes, edited_credits, "votes", "credits")){
       return;
     }
@@ -244,9 +258,11 @@ void ask_votes_to_edit(USER * person){
 void modify_options(USER *person){
   USER copy = *person;
   USER * pcopy = &copy;
+  printf("\n");
   while(true){
-    printf("\nWhat do you want to change about %s %s:\n", person->name, person->surname);
-    printf("0 nothig more\n"
+   printf("What do you want to change about %s %s:\n", person->name, person->surname);
+ 
+   printf("0 nothig more\n"
            "1 name\n"
            "2 surename\n"
            "3 add votes\n"
@@ -256,7 +272,7 @@ void modify_options(USER *person){
            "w to clear the screen\n"
            "Insert the number: ");
     char c = (char)read_char();
-    printf("\n");
+    system("clear");
     switch(c){
       case '0':
         printf("Do you want to save changes (Y/N): ");
@@ -267,36 +283,38 @@ void modify_options(USER *person){
           printf("\nChanges discarded\n\n");
         }
         print_user(person, 1);  
-        printf("Note: if some value is 0 maybe something has gone bad\n");  
 	return;
       case '1':
         change_string(pcopy->name, "name");
+        printf("\n");
         break;
       case '2':
         change_string(pcopy->surname, "surname");
+        printf("\n");
         break;
       case '3':
         ask_votes_add(pcopy);
+        printf("\n");
         break;
       case '4':
         ask_votes_remove(pcopy);
+        printf("\n");
         break;
       case '5':
         ask_votes_to_edit(pcopy);
+        printf("\n");
         break;
       case '6':
-        printf("\n");
-        printf("Old_version:\n ");
+        printf("Old_version:\n");
         print_user(person, 0);  
-        printf("New_version:\n ");
+        printf("New_version:\n");
         print_user(pcopy, 0);  
-        printf("Note: if some value is 0 maybe something has gone bad\n");  	
         break;
       case 'w':
         system("clear");
         break;
       default:
-        printf("Choice didn't recognized\n");    
+        printf("Choice didn't recognized\n\n");    
     } 
   }
 }
@@ -310,8 +328,8 @@ void update_entry(ELEM *head){
   char name[size];
   char surname[size];
   ELEM * person;
-  printf("\nType c whenever you want to interrupt the action\n"); 
-  printf("Choose the person to modify\n");
+  printf("Type c whenever you want to interrupt the action.\n"); 
+  printf("Choose the person to modify.\n");
   ask_string(name, size, "name");
   if(empty_str(name)) return;
   ask_string(surname, size, "surname");
@@ -372,9 +390,10 @@ void calculation_options(USER * pers){
            "enter the option: ");
     char c = (char)read_char();
     printf("\n");
+    system("clear");
     switch(c){
       case '0':
-        printf("Exiting from calculation mode\n");
+        printf("Exiting from calculation mode\n\n");
 	return;
       case '1':
         new_mean_estimator(pers);
@@ -383,7 +402,7 @@ void calculation_options(USER * pers){
         system("clear");
         break;
       default:
-        printf("Choice didn't recognized\n");
+        printf("Choice didn't recognized\n\n");
     }
   }
 }
@@ -397,7 +416,7 @@ void calculation_mode(ELEM * head){
   char name[size];
   char surname[size];
   ELEM * person;
-  printf("\nType c whenever you want to interrupt the action\n"); 
+  printf("Type c whenever you want to interrupt the action\n"); 
   printf("Choose the person and enter in calculation mode\n");
   ask_string(name, size, "name");
   if(empty_str(name)) return;
@@ -414,9 +433,9 @@ void calculation_mode(ELEM * head){
 /* USER SWITCH BLOCK */
 void user_interaction(ELEM**phead){
 
-  printf("Hi dear user, this code is meant to store informations about your marks and the one of your friends," 
-          "also it allows you to calculate of some specific means, or to do some hypotetical calculation.\n"
-          "That said choose what you want to do:\n");
+  printf("Hi dear user, this application is meant to store people's grades, " 
+          "calculate means, and see what can happen if you get certain grades instead of others.\n"
+          "\nWhat you want to do:\n");
   while(true){
     printf("0 exit\n"
            "1 show database\n"
@@ -427,24 +446,27 @@ void user_interaction(ELEM**phead){
            "w to clear the screen\n"
            "Insert the number: ");
     char c = (char)read_char();
-    switch(c){
+    system("clear");
+    switch(c){       
       case '0':
-        printf("\nbye bye\n");
+        printf("Thank you for using this app. Bye bye.\n");
 	return;
       case '1':
         traverse_database(*phead);
-        printf("Note: if some value is 0 maybe something has gone bad\n");
-        break;
+       break;
       case '2':
         if(handle_add_element(phead)){
           printf("Something has gone wrong.\n"); 
-        };    
+        };
+        printf("\n");    
         break;
       case '3':
         handle_remove_element(phead);
+        printf("\n");
         break;
       case '4':
         update_entry(*phead);
+        printf("\n");
         break;
       case '5':
         calculation_mode(*phead);
@@ -453,9 +475,8 @@ void user_interaction(ELEM**phead){
         system("clear");
         break;
       default:
-        printf("\nChoice didn't recognized\n");    
+        printf("Choice didn't recognized\n");    
     }
-    printf("\n");
   }
 }
 
@@ -467,8 +488,11 @@ int main(){
   ELEM * head = NULL;
   printf("[INITIALIZATION]\n"); 
   if(ui_load(&head)) exit(1);
-  printf("[INITIALIZATION TERMINATED]\n\n");
-  
+  printf("[INITIALIZATION TERMINATED]\n");
+  do{ printf("\nPress ENTER to continue..."); }
+  while((char)read_char() != '\n');
+  system("clear");
+ 
   user_interaction(&head); 
 
   printf("\n[TERMINATION]\n"); 

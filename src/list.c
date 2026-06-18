@@ -26,7 +26,7 @@ int append_list(ELEM ** phead, USER * new_user){
 }
 
 void traverse_database(ELEM * head){ 
-  printf("\n");
+
   if(head==NULL){
     printf("No records in the database\n");
     return;
@@ -54,7 +54,7 @@ void remove_person(ELEM**phead, char *name, char *surname, int size){
     *phead = (*phead)->next;
     free(head->data);
     free(head);
-    printf("%s %s removed from database\n");
+    printf("\n%s %s removed from database\n", name, surname);
   }else{
     ELEM * current = head;
     while(current->next!=NULL && !is_right_person(current->next->data, name, surname)){
@@ -65,7 +65,7 @@ void remove_person(ELEM**phead, char *name, char *surname, int size){
       current->next = support->next;
       free(support->data);
       free(support);
-      printf("%s %s removed from database\n");
+      printf("%s %s removed from database\n", name, surname);
     }else{
       printf("Person not found in the database\n");
     }

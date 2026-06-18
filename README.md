@@ -13,19 +13,19 @@ So I started working on this small project.
 - use only standard libraries
 For details see the technical details section.
 
-
 ## DOWNLOAD
 Clone the repo with: 
-`command to get the repo`
+`git clone https://github.com/Sh4m3X/mediaCalc`
 Alternatively, you can download the source code directly from your browser.
 
-## BUILD
-Once you have obtained the repo and entered its project directory, compile it with:
-`command to compile the source`
+## MAKEFILE
+Once you have obtained the repo and entered its project directory, just type:
+`make`
+To execute makefile and compile the source code
 
 ## RUN
 After compilation, run the executable with:
-`./name_of_exe`
+`./calc`
 
 ## FEATURES
 When started, the program first requires permissions to create a file named "database.bin" in the current directory.
@@ -100,17 +100,20 @@ The program does not currently support distinguishing between multiple people wi
 ### Repo structure 
 ```text
 ./mediaCalc
+├─ /makefile
+├─ /images
+├─ /include
+│  ├── calcMedia.h
+│  ├── calculation.h
+│  ├── list.h
+│  ├── storage.h
+│  └── utils.h
 ├─ /src
 │  ├── calcMedia.c
-│  ├── calcMedia.h
 │  ├── calculation.c
-│  ├── calculation.h
 │  ├── list.c
-│  ├── list.h
 │  ├── storage.c
-│  ├── storage.h
-│  ├── utils.c
-│  └── utils.h
+│  └── utils.c
 └── README.md
 ```
 The program execution starts from calcMedia.c, which handles user interaction and the main application loop. 

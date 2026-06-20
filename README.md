@@ -1,4 +1,12 @@
-# MEAN CALCULATION 
+# AVERAGE CALCULATION (v1.0.0)
+
+## Project Status
+
+This project is currently considered in pause and is no longer under active development.
+
+The application fulfills its original goal of managing academic grades and calculating averages. For the purpose of a person should be enough.
+
+Future improvements are listed in the "Further Development Ideas" section, but no additional features are currently planned.
 
 ## WHY?
 During my university years, I often wondered how the grade af a particular exam would affect my GPA. To calculate it, I usually relied on my phone's calculator, manually entering every grade along with it's corresponding credits each time. 
@@ -152,6 +160,8 @@ It preserves all raw information required for:
 
 An additional possible optimization would be caching computed averages to reduce repeated calculations, but the current implementation prioratize correctness and simplicity.
 
+The program assumes a maximum of 50 votes/grades per student, as this limit is rarely exceeded in typical academic contexts. This design simplifies memory management and keeps the implementation strightforward. A future improvement could implement dynamically allocated memory, allowing an arbitrary number of votes/grades.
+
 ### IDENTIFICATION STRATEGY
 Each person is identified using the combination
 `<name,surname>`
@@ -169,8 +179,14 @@ for terminal clearing functionality
 
 A cross-platform version could be implemented by detecting the operating system at compile time or runtime and switching between `clear` and `cls`.
 
+Additionally this method introduces an unnecessary dependency on the system shell. While no user input is passed to the command is, avoiding `system()` is generally a good practice. Future versions may replace it with ANSI escape sequences or a platform independent solutions.
 
-
+### FURTHER DEVELOPMENT IDEA
+1. Introduce a unique ID system for students
+2. Introduce SUBJECT structure: Replace the separate grades and credits arrays with a Subject record that stores the subject name, grade, and credits toget
+3. Dynamically allocate memory for votes and grades
+4. Replace the binary file with a structured database solution
+5. Change `system('clear')` with a portable alternativeher.
 
 
 

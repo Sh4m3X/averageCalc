@@ -8,7 +8,7 @@ The application fulfills its original goal of managing academic grades and calcu
 
 Future improvements are listed in the "Further Development Ideas" section, but no additional features are currently planned.
 
-## WHY?
+## PURPOSE
 During my university years, I often wondered how the grade af a particular exam would affect my GPA. To calculate it, I usually relied on my phone's calculator, manually entering every grade along with it's corresponding credits each time. 
 
 As you can immagine, this process quickly became tedious. One day I thought: "why not write some code to do it for me instead" (I didn't think to use excel, at the time).

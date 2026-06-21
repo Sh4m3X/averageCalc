@@ -43,28 +43,24 @@ void ui_write_file(ELEM *head){
 }
 
 void ask_num_elements_to_add(USER * pers, int *c, char *str){
-  char buff[128];
   do{ 
     printf("Insert the number of %s you want to insert (max %d): ", str, MAX_NUM_VOTES-pers->num_votes);
   }while(!get_num(c, str));
 }
 
 void ask_num_elements_to_remove(USER * pers, int *c, char *str){
-  char buff[128];
   do{ 
     printf("Insert the number of %s you want to remove (max %d): ", str, pers->num_votes);
   }while(!get_num(c, str));
 }
 
 void ask_num_elements_to_edit(USER * person, int *c, char * str){
-  char buff[128];
   do{ 
     printf("Insert the number of %s you want to edit (max %d): ", str, person->num_votes);
   }while(!get_num(c, str));
 }
 
 void ask_num_hp_elements(USER *person, int * c, char * str){
-  char buff[128];
   do{ 
     printf("Insert the number of hypotetical %s (max %d): ", str, MAX_NUM_VOTES-person->num_votes);
   }while(!get_num(c, str));

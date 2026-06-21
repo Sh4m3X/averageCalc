@@ -1,8 +1,33 @@
+#include <unistd.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "list.h"
 #include "calcMedia.h"
 #include "storage.h"
+
+int database_path(char * db_path, size_t size){  
+  ssize_t len = readlink("/proc/self/exe", db_path, size - 1);
+  if(len <  0 || (size_t)len >= size - 1){
+    return 0;
+  }
+  db_path[len] = '\0';
+
+  char * last_slash = strrchr(db_path, '/');
+  if (!last_slash){
+    return 0;  
+  }  
+  
+  *last_slash = '\0';
+
+  if(strlen(db_path) + strlen(DATABASE_FILE) + 2 > size)
+    return 0;
+  strcat(db_path, "/");
+  strcat(db_path, DATABASE_FILE);
+  return 1;
+}
+
 
 int read_elem_from_file(ELEM** phead, void * file){
   USER buff;
@@ -22,22 +47,27 @@ int read_elem_from_file(ELEM** phead, void * file){
   return 0;
 }
 
-FILE * create_file(){
+FILE * create_file(char * db_path){
   FILE * file;
    
-  file = fopen(DATABASE_FILE, "wb+");
+  file = fopen(db_path, "wb+");
   if(file==NULL){
     return NULL;   
   }
-  printf("\nFile %s created successfully :)\n\n", DATABASE_FILE);
+  printf("\nFile %s created successfully :)\n\n", db_path);
   return file;
 }
 
 int load_database(ELEM **phead){
-  FILE* file = fopen(DATABASE_FILE, "rb+"); 
+  char db_buff[1024];
+  if(!database_path(db_buff, sizeof(db_buff))){
+    return 1;
+  }
+
+  FILE* file = fopen(db_buff, "rb+"); 
   if (file == NULL){
     if(ask_user_to_create_database()){
-      file = create_file();
+      file = create_file(db_buff);
       if(file == NULL) return 1;
     }else{
       return -1;
@@ -66,7 +96,12 @@ int write_elem_on_file(ELEM *head, void * file){
 }
 
 int write_file(ELEM *head){
-  FILE* file = fopen(DATABASE_FILE, "wb");
+  char db_buff[1024];
+  if(!database_path(db_buff, sizeof(db_buff))){
+    return -1;
+  }
+
+  FILE* file = fopen(db_buff, "wb");
   if(file == NULL){ 
     return -1;
   }

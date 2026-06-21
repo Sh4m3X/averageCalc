@@ -11,6 +11,6 @@ int write_file(ELEM *head);
 
 #endif
 
-#define DATABASE_FILE "./database.bin"
+#define DATABASE_FILE "database.bin"
 
 
